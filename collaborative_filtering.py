@@ -39,7 +39,7 @@ if __name__ == '__main__':
     # 5-fold Cross-validation on each algorithm
     print('\n\n*** TRAINING AND TESTING ***\n')
     print('We are going to train and test different algorithms using the 5-fold cross-validation approach.')
-    print('We will test:\n  * KNN\n  * KNN-cosine\n  * KNN-pearson\n  * KNN-cosine-baseline\n  * KNN-pearson-baseline\n  * SVD\n\n')
+    print('We will test:\n  * KNN\n  * KNN-cosine\n  * KNN-pearson\n  * KNN-cosine-baseline\n  * KNN-pearson-baseline\n  * SVD\n')
     kf = KFold(n_splits=5)
     results = {}
     for algo_name, algo in tqdm(algos.items()):
@@ -67,3 +67,5 @@ if __name__ == '__main__':
     results = pd.read_csv(results_path)
     results['Mean'] = results.mean(axis=1)
     results['Std'] = results.std(axis=1)
+
+    print('\n\n',results)
