@@ -1,4 +1,4 @@
-from CollaborativeUtils import *
+from collaborative_filtering_utils import *
 
 if __name__ == '__main__':
 
