@@ -80,9 +80,10 @@ def dictionary_reduction(A, n_components):
         - As: reduced DataFrame having n_components as a dimension
     '''
 
+    movies_id = A.index
     A = A.to_numpy()
     svd = TruncatedSVD(n_components=n_components)
     As = svd.fit_transform(A)
-    As = pd.DataFrame(As, index=A.index)
+    As = pd.DataFrame(As, index=movies_id)
 
     return As
