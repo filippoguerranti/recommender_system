@@ -1,6 +1,8 @@
 import pandas as pd 
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.decomposition import TruncatedSVD
 
 
 def create_movies_profiles(movies_df, tags_df):
@@ -81,6 +83,6 @@ def dictionary_reduction(A, n_components):
     A = A.to_numpy()
     svd = TruncatedSVD(n_components=n_components)
     As = svd.fit_transform(A)
-    As = pd.DataFrame(A_red, index=list(movies_profiles.keys()))
+    As = pd.DataFrame(As, index=A.index)
 
     return As
