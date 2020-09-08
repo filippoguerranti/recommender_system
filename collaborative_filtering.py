@@ -23,18 +23,17 @@ if __name__ == '__main__':
     data = Dataset.load_from_df(ratings_df[['userId', 'movieId', 'rating']], reader)
 
     # Algorithms definitions
-    algos = {'KNN': KNNBasic(verbose=False), 
-             'KNN-cosine': KNNWithMeans(sim_options={'name':'cosine'}, verbose=False), 
-             'KNN-pearson': KNNWithMeans(sim_options={'name':'pearson'}, verbose=False),
-             'KNN-cosine-baseline': KNNBaseline(sim_options={'name':'cosine'}, verbose=False),
+    algos = {'KNN-cosine-baseline': KNNBaseline(sim_options={'name':'cosine'}, verbose=False),
              'KNN-pearson-baseline': KNNBaseline(sim_options={'name':'pearson'}, verbose=False),
-             'SVD-20-0.005': SVD(n_epochs=20, lr_all=0.005),
-             'SVD-50-0.003': SVD(n_epochs=50, lr_all=0.003)}
+             'SVD-20ep-.005lr': SVD(n_epochs=20, lr_all=0.005),
+             'SVD-50ep-.003lr': SVD(n_epochs=50, lr_all=0.003)}
 
     # 5-fold Cross-validation on each algorithm
     print('\n\n*** TRAINING AND TESTING ***\n')
     print('We are going to train and test different algorithms using the 5-fold cross-validation approach.')
-    print('\n  * KNN\n  * KNN-cosine\n  * KNN-pearson\n  * KNN-cosine-baseline\n  * KNN-pearson-baseline\n  * SVD-20-0.005\n  * SVD-50-0.003\n')
+    for algo_name, _ in algos.items():
+        print('* ', algo_name)
+    print('\n')
     n_splits = 5
     kf = KFold(n_splits=n_splits)
     results = {}
