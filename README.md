@@ -1,9 +1,7 @@
 # Recommender System
 Implementation of a recommender system based on the MovieLens dataset.
 
----
-
-## Outline:
+## Outline
 * [Dataset](#dataset)
 * [Collaborative Filtering](#collaborative-filtering)
 * Content based
