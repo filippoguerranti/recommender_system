@@ -1,17 +1,17 @@
 # Recommender System
-Implementation of a recommender system based on MovieLens dataset
+Implementation of a recommender system based on the MovieLens dataset.
 
 ---
 
 ## Outline:
-* Dataset
-* Collaborative Filtering
+* [Dataset](#dataset)
+* [Collaborative Filtering](#collaborative-filtering)
 * Content based
 
 ---
 
-## Dateset
-I have used the MovieLens dataset (http://files.grouplens.org/datasets/movielens/ml-latest-small.zip) and in particular I focused on the `movies.csv`, the `tags.csv` and the `ratings.csv` files.
+## Dataset
+I have used the [MovieLens dataset](http://files.grouplens.org/datasets/movielens/ml-latest-small.zip) and in particular I focused on the `movies.csv`, the `tags.csv` and the `ratings.csv` files.
 The dataset contains 100863 ratings and 3683 tags provided by 610 users about 9742 movies.
 
 ---
