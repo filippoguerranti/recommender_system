@@ -4,20 +4,21 @@ if __name__ == '__main__':
 
 #### DATA PREPROCESSING ####
 
-    # Get the file and read it into a Pandas DataFrame
+    # Get the files and read them into Pandas DataFrames
     movies_path = './data/movies.csv'
     movies_df = pd.read_csv(movies_path)
+
     ratings_path = './data/ratings.csv'
     ratings_df = pd.read_csv(ratings_path)
     ratings_df = ratings_df.drop('timestamp', axis=1)
 
-    # Print some informations about the dataset
+    # Print some informations about the ratings dataset
     print_info(dataframe=ratings_df)
 
 
 #### COLLABORATIVE FILTERING IMPLEMENTATION ####
 
-    # Surprise model creation: we have to define a Reader and the Dataset modules
+    # Surprise model creation: we have to define the Reader and the Dataset modules
     reader = Reader(rating_scale=(1, 5))
     data = Dataset.load_from_df(ratings_df[['userId', 'movieId', 'rating']], reader)
 
@@ -27,12 +28,13 @@ if __name__ == '__main__':
              'KNN-pearson': KNNWithMeans(sim_options={'name':'pearson'}, verbose=False),
              'KNN-cosine-baseline': KNNBaseline(sim_options={'name':'cosine'}, verbose=False),
              'KNN-pearson-baseline': KNNBaseline(sim_options={'name':'pearson'}, verbose=False),
-             'SVD': SVD()}
+             'SVD-20-0.005': SVD(n_epochs=20, lr_all=0.005),
+             'SVD-50-0.003': SVD(n_epochs=50, lr_all=0.003)}
 
     # 5-fold Cross-validation on each algorithm
     print('\n\n*** TRAINING AND TESTING ***\n')
     print('We are going to train and test different algorithms using the 5-fold cross-validation approach.')
-    print('We will test:\n  * KNN\n  * KNN-cosine\n  * KNN-pearson\n  * KNN-cosine-baseline\n  * KNN-pearson-baseline\n  * SVD\n')
+    print('\n  * KNN\n  * KNN-cosine\n  * KNN-pearson\n  * KNN-cosine-baseline\n  * KNN-pearson-baseline\n  * SVD-20-0.005\n  * SVD-50-0.003\n')
     n_splits = 5
     kf = KFold(n_splits=n_splits)
     results = {}
@@ -58,19 +60,19 @@ if __name__ == '__main__':
 
 #### PREDICTIONS ####
 
-    print('\n\n*** PREDICTIONS ***\n')
+    print('\n\n*** PREDICTIONS ***\n(It may require some time. Please wait ...)\n')
 
     # We take the algorithm that performed best and use it to predict all the missing pairs
     best_algo = results_df[results_df['Mean']==results_df['Mean'].min(axis=0)]['Algorithm'].to_numpy()[0]
-    pred_algo = algos[best_algo]
+    prediction_algo = algos[best_algo]
 
     # We train the algorithm with the whole training set
     trainset = data.build_full_trainset()
-    pred_algo.fit(trainset)
+    prediction_algo.fit(trainset)
 
     # We test the algorithm over the remaining set (to find the missing ratings)
     anti_testset = trainset.build_anti_testset()
-    predictions = pred_algo.test(anti_testset)
+    predictions = prediction_algo.test(anti_testset)
 
     # We write the predictions on a .csv file
     predictions_path = './results/predictions.csv'
