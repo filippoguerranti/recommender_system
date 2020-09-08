@@ -67,7 +67,7 @@ def create_movies_terms(movies_profiles):
     return A
 
 
-def dictionary_reduction(A, n_components):
+def dictionary_reduction(A, n_components=40):
     '''Compute the dictionary reduction on the input DataFrame A.
     It applies the SVD truncated at n_components and returns a reduced DataFrame.
 
