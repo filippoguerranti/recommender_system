@@ -179,8 +179,14 @@ class Users():
         It creates the users' profiles (vectors) based on the genres and tags of the movies each users rated
         '''
 
+        # List containing all the IDs of the users
+        self.__users_list = ratings_df['userId'].unique() 
+        # List containing all the IDs of the movies
+        self.__movies_list = ratings_df['movieId'].unique() 
+
         self.__create_users_movies_dict(ratings_df)
         self.__create_users_vectors(movies_instance)
+        self.__create_users_not_rated_movies_dict(ratings_df)
 
     
     def __create_users_movies_dict(self, ratings_df):
@@ -195,9 +201,6 @@ class Users():
             - self.__users_movies_dict: nested dictionary having userId as keys and for each user 
                     the ratings are keys and the movieIds are values
         '''
-
-        # List containing all the IDs of the users
-        self.__users_list = ratings_df['userId'].unique() 
 
         # Returned dictionary  
         self.__users_movies_dict = {}   
@@ -224,22 +227,75 @@ class Users():
 
         '''
 
+        # Dictionary containing the vector model for each user
         self.__users_vectors = {}
+        # Loop over all the users
         for user in self.__users_list:
+            # Numerator is the sum of all the movie-vectors multiplied by the rating
             numerator = 0
+            # Denominator is the sum of all the ratings
             denominator = 0
+            # Loop over all the ratings
             for rating in self.__users_movies_dict[user]:
+                # Loop over all the movies of a given user having given rating
                 for movie in self.__users_movies_dict[user][rating]:
                     numerator += (rating) * mv.movie_vector(movie)
                     denominator += rating
+            # Weighted average
             self.__users_vectors[user] = numerator/denominator
 
 
-    def users_movies_dict(self):
+    def __create_users_not_rated_movies_dict(self, ratings_df):
 
-        ''' Returns the dictionary describing the movies for each users '''
+        ''' Creates a dictionary containing all the users as keys and the not rated movies for each user
+        as values 
+        
+        Params:
+            - ratings_df: ratings' Pandas DataFrame
 
-        return self.__users_movies_dict
+        Returns:
+            - self.__users_not_rated_movies_dict: dictionary having userId as keys and for each user 
+                    the not-rated movies as values
+        '''
+
+        # Returned dictionary  
+        self.__users_not_rated_movies_dict = {}   
+
+        # Loop over all the users in the dataset                    
+        for user in self.__users_list:         
+            user_rated_movies = list(ratings_df[(ratings_df['userId']==user)]['movieId'])
+            self.__users_not_rated_movies_dict[user] = []
+            # Loop over all the movies
+            for movie in self.__movies_list:
+                if movie not in user_rated_movies:
+                    self.__users_not_rated_movies_dict[user].append(movie)
+    
+
+    def movies_dict(self, userId):
+
+        ''' Returns the dictionary describing the movies for each users.
+
+        Params:
+            - userId: ID of the user of which the movies are requested
+        
+        Returns:
+            - self.__users_movies_dict[userId]: dictionary of movies '''
+
+        return self.__users_movies_dict[userId]
+
+
+    def not_rated_movies_list(self, userId):
+
+        '''Returns the not rated movies of userId.
+
+        Params:
+            - userId: ID of the user
+        
+        Returns:
+            - self.__users_not_rated_movies_dict[userId]
+        '''
+
+        return self.__users_not_rated_movies_dict[userId]
 
 
     def user_vector(self, userId):
@@ -247,7 +303,7 @@ class Users():
         '''Returns the vector model of the user given by userId.
 
         Params:
-            - userId: ID of the user of which the vector is required
+            - userId: ID of the user of which the vector is requested
         
         Returns:
             - self.__user_vectors[userId]: vector model of the users
@@ -255,3 +311,37 @@ class Users():
 
         return self.__users_vectors[userId]
 
+
+
+class ContentBased():
+
+    ''' Class to handle a content-based recommendation system '''
+
+    def __init__(self, users_instance, movies_instance):
+
+        ''' Class constructor.
+
+        Params:
+            - user_instance: instance of class Users
+            - movies_instance: instance of class Movies
+
+        It creates the content-based recommender system on users and movies
+        passed as parameters
+        '''
+        self.__users = users_instance
+        self.__movies = movies_instance
+
+
+    def __recommend(self, userId, n_recommendations=10):
+
+        ''' Recommends movies to user defined by userId.
+        
+        Params:
+            - userId: id of the user we want to recommend movies
+            - n_recommendations: number of recommendations
+            
+        Output:
+            -  
+        '''
+
+        
