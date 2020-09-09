@@ -176,11 +176,11 @@ class Users():
             - ratings_df: ratings' Pandas DataFrame
             - movies_instance: instance of class Movies
 
-        It creates the users' profiles based on the genres and tags of the movies each users rated
+        It creates the users' profiles (vectors) based on the genres and tags of the movies each users rated
         '''
 
         self.__create_users_movies_dict(ratings_df)
-        self.__create_users_profile(movies_instance)
+        self.__create_users_vectors(movies_instance)
 
     
     def __create_users_movies_dict(self, ratings_df):
@@ -211,20 +211,20 @@ class Users():
                 self.__users_movies_dict[user][rating] = list(ratings_df[(ratings_df['userId']==user) & (ratings_df['rating']==rating)]['movieId'])
     
 
-    def __create_users_profile(self, mv):
+    def __create_users_vectors(self, mv):
 
-        ''' Creates the users' profiles which is the same vector as the one
-        describing the movies' profiles.
+        ''' Creates the users' profiles (vectors) which is the same vector as the one
+        describing the movies' profiles (vectors).
 
         Params:
             - mv: instance of class Movies
 
         Returns:
-            - self.__users_profiles: dictionary containing a vector for each user
+            - self.__users_vectors: dictionary containing a vector for each user
 
         '''
 
-        self.__users_profiles = {}
+        self.__users_vectors = {}
         for user in self.__users_list:
             numerator = 0
             denominator = 0
@@ -232,13 +232,26 @@ class Users():
                 for movie in self.__users_movies_dict[user][rating]:
                     numerator += (rating) * mv.movie_vector(movie)
                     denominator += rating
-            self.__users_profiles[user] = numerator/denominator
+            self.__users_vectors[user] = numerator/denominator
 
 
     def users_movies_dict(self):
+
+        ''' Returns the dictionary describing the movies for each users '''
+
         return self.__users_movies_dict
 
 
-    def profiles(self):
-        return self.__users_profiles
+    def user_vector(self, userId):
+
+        '''Returns the vector model of the user given by userId.
+
+        Params:
+            - userId: ID of the user of which the vector is required
         
+        Returns:
+            - self.__user_vectors[userId]: vector model of the users
+        '''
+
+        return self.__users_vectors[userId]
+
