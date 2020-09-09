@@ -179,6 +179,9 @@ class Users():
         It creates the users' profiles (vectors) based on the genres and tags of the movies each users rated
         '''
 
+        # Ratings dataframe
+        self.__ratings_df = ratings_df
+
         # List containing all the IDs of the users
         self.__users_list = ratings_df['userId'].unique() 
         # List containing all the IDs of the movies
@@ -186,7 +189,6 @@ class Users():
 
         self.__create_users_movies_dict(ratings_df)
         self.__create_users_vectors(movies_instance)
-        self.__create_users_not_rated_movies_dict(ratings_df)
 
     
     def __create_users_movies_dict(self, ratings_df):
@@ -245,32 +247,6 @@ class Users():
             self.__users_vectors[user] = numerator/denominator
 
 
-    def __create_users_not_rated_movies_dict(self, ratings_df):
-
-        ''' Creates a dictionary containing all the users as keys and the not rated movies for each user
-        as values 
-        
-        Params:
-            - ratings_df: ratings' Pandas DataFrame
-
-        Returns:
-            - self.__users_not_rated_movies_dict: dictionary having userId as keys and for each user 
-                    the not-rated movies as values
-        '''
-
-        # Returned dictionary  
-        self.__users_not_rated_movies_dict = {}   
-
-        # Loop over all the users in the dataset                    
-        for user in self.__users_list:         
-            user_rated_movies = list(ratings_df[(ratings_df['userId']==user)]['movieId'])
-            self.__users_not_rated_movies_dict[user] = []
-            # Loop over all the movies
-            for movie in self.__movies_list:
-                if movie not in user_rated_movies:
-                    self.__users_not_rated_movies_dict[user].append(movie)
-    
-
     def movies_dict(self, userId):
 
         ''' Returns the dictionary describing the movies for each users.
@@ -292,10 +268,16 @@ class Users():
             - userId: ID of the user
         
         Returns:
-            - self.__users_not_rated_movies_dict[userId]
+            - self.__users_not_rated_movies_dict[userId]: list containing all 
+                    the not rated movies by userId
         '''
+        # List containing all the movies rated by userId
+        list1 = list(self.__ratings_df[(self.__ratings_df['userId']==userId)]['movieId'])
+        # List containing all the movies in the dataset
+        list2 = self.__movies_list
+        # Returns the list containing all the not rated movies by userId
+        return (list(list(set(list1)-set(list2)) + list(set(list2)-set(list1))))
 
-        return self.__users_not_rated_movies_dict[userId]
 
 
     def user_vector(self, userId):
@@ -348,9 +330,9 @@ class ContentBased():
 
         # List containing the similarity and the movieId
         recommendations = [[0,0]]*n_recommendations
-        user_vector = self.__users.user_vector(userId)
+        user_vector = self.__users.user_vector(userId).reshape(1,-1)
         for movieId in self.__users.not_rated_movies_list(userId):
-            movie_vector = self.__movies.movie_vector(movieId)
+            movie_vector = self.__movies.movie_vector(movieId).reshape(1,-1)
             # Compute the cosine similarity between the user profile and the movie profile
             sim = cosine_similarity(user_vector, movie_vector)
             # Since the recommendations are sorted in ascending order this means that
