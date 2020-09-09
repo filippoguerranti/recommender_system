@@ -27,7 +27,9 @@ class Movies():
 
         self.__create_movies_profiles(movies_df, tags_df)
         self.__create_movies_terms(tfidf=tfidf)
-        if lsa:     # if latent semantic analysis is True, than apply it
+
+        # If latent semantic analysis is True, than apply it
+        if lsa:     
             self.__latent_semantic_analysis(n_components)
 
 
@@ -47,7 +49,7 @@ class Movies():
                       ... }
         '''
 
-        # dictionary containing the movies as keys and the lists of words as values
+        # Dictionary containing the movies as keys and the lists of words as values
         self.__movies_profiles = {}     
 
         # Get the words from the movies genres
@@ -85,11 +87,16 @@ class Movies():
 
         '''
 
-        if tfidf:       # if the TF-IDF is selected, then apply it
+        # If the TF-IDF is selected, then apply it
+        if tfidf:       
             counter = TfidfVectorizer()
-        else:           # otherwise go for the classic word counting
-            counter = CountVectorizer()   
+
+        # Otherwise go for the classic word counting
+        else:           
+            counter = CountVectorizer() 
+
         matrix = counter.fit_transform(self.__movies_profiles.values())
+
         # Convert the matrix into a Pandas DataFrame
         self.__movies_terms_dataframe = pd.DataFrame(matrix.todense(), index=list(self.__movies_profiles.keys()), columns=counter.get_feature_names())
 
@@ -109,11 +116,14 @@ class Movies():
 
         # Retrive the IDs of the movies from the movies-terms dataframe
         movies_id = self.__movies_terms_dataframe.index
+
         # Convert the DataFrame into a numpy matrix
         self.__movies_terms_matrix = self.__movies_terms_dataframe.to_numpy()
+
         # Apply the Truncated Singular Value Decomposition
         svd = TruncatedSVD(n_components=n_components)
         self.__reduced_movies_terms_matrix = svd.fit_transform(self.__movies_terms_matrix)
+
         # Convert the matrix into a Pandas DataFrame
         self.__reduced_movies_terms_dataframe = pd.DataFrame(self.__reduced_movies_terms_matrix, index=movies_id)
 
@@ -180,20 +190,39 @@ class Users():
         
         Params:
             - ratings_df: ratings' Pandas DataFrame
+
+        Returns:
+            - self.__users_movies_dict: nested dictionary having userId as keys and for each user 
+                    the ratings are keys and the movieIds are values
         '''
 
         # List containing all the IDs of the users
         self.__users_list = ratings_df['userId'].unique() 
+
         # Returned dictionary  
         self.__users_movies_dict = {}   
+
         # Loop over all the users in the dataset                    
         for user in self.__users_list:                      
             self.__users_movies_dict[user] = {}
+            # Loop over all the ratings
             for rating in np.arange(0,5.5,0.5):
+                # Create a list of movieIds for all the ratings and for all the users
                 self.__users_movies_dict[user][rating] = list(ratings_df[(ratings_df['userId']==user) & (ratings_df['rating']==rating)]['movieId'])
     
 
     def __create_users_profile(self, mv):
+
+        ''' Creates the users' profiles which is the same vector as the one
+        describing the movies' profiles.
+
+        Params:
+            - mv: instance of class Movies
+
+        Returns:
+            - self.__users_profiles: dictionary containing a vector for each user
+
+        '''
 
         self.__users_profiles = {}
         for user in self.__users_list:
