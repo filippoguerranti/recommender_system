@@ -332,7 +332,7 @@ class ContentBased():
         self.__movies = movies_instance
 
 
-    def __recommend(self, userId, n_recommendations=10):
+    def recommend(self, userId, n_recommendations=10):
 
         ''' Recommends movies to user defined by userId.
         
@@ -341,7 +341,21 @@ class ContentBased():
             - n_recommendations: number of recommendations
             
         Output:
-            -  
+            - recommendations: list of list in which the first element
+                    of each sub-list represents the similarity measure 
+                    and the second represents the movieId
         '''
 
-        
+        # List containing the similarity and the movieId
+        recommendations = [[0,0]]*n_recommendations
+        user_vector = self.__users.user_vector(userId)
+        for movieId in self.__users.not_rated_movies_list(userId):
+            movie_vector = self.__movies.movie_vector(movieId)
+            # Compute the cosine similarity between the user profile and the movie profile
+            sim = cosine_similarity(user_vector, movie_vector)
+            # Since the recommendations are sorted in ascending order this means that
+            # if sim > recommendations[0][0] than sim must be inserted in the list
+            if sim > recommendations[0][0]:
+                recommendations[0] = [sim, movieId]
+                recommendations = sorted(recommendations, key=lambda x: x[0])
+        return recommendations
