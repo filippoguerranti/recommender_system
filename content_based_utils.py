@@ -25,6 +25,9 @@ class Movies():
         term-weighting and the dimensionality reduction (if they are True).
         '''
 
+        # Movies dataframe
+        self._movies_df = movies_df
+
         self.__create_movies_profiles(movies_df, tags_df)
         self.__create_movies_terms(tfidf=tfidf)
 
@@ -340,4 +343,11 @@ class ContentBased():
             if sim > recommendations[0][0]:
                 recommendations[0] = [sim, movieId]
                 recommendations = sorted(recommendations, key=lambda x: x[0])
+        
+        # Arrange recommendations in a more readable form
+        for i in range(n_recommendations):
+            recommendations[i][0] = round(recommendations[i][0][0][0],2)
+            movie_title = self.__movies._movies_df[self.__movies._movies_df['movieId']==recommendations[i][1]]['title']
+            recommendations[i][1] = movie_title
+
         return recommendations
