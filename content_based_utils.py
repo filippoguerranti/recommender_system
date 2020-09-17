@@ -279,8 +279,7 @@ class Users():
         # List containing all the movies in the dataset
         list2 = self.__movies_list
         # Returns the list containing all the not rated movies by userId
-        return (list(list(set(list1)-set(list2)) + list(set(list2)-set(list1))))
-
+        return list(set(list2)-set(list1))
 
 
     def user_vector(self, userId):
