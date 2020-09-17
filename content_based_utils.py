@@ -345,8 +345,15 @@ class ContentBased():
         
         # Arrange recommendations in a more readable form
         for i in range(n_recommendations):
-            recommendations[i][0] = round(recommendations[i][0][0][0],2)
-            movie_title = self.__movies._movies_df[self.__movies._movies_df['movieId']==recommendations[i][1]]['title']
-            recommendations[i][1] = movie_title
-
+            sim = round(recommendations[i][0][0][0],3)
+            movie_id = self.__movies._movies_df[self.__movies._movies_df['movieId']==recommendations[i][1]].values[0][0]
+            movie_title = self.__movies._movies_df[self.__movies._movies_df['movieId']==recommendations[i][1]].values[0][1]
+            movie_genres = self.__movies._movies_df[self.__movies._movies_df['movieId']==recommendations[i][1]].values[0][2]
+            recommendations[i][0] = movie_id
+            recommendations[i][1] = sim
+            recommendations[i].append(movie_title)
+            recommendations[i].append(movie_genres)
+        
+        recommendations = pd.DataFrame(recommendations, columns=['movieId','similarity','title','genres'])
+        
         return recommendations
