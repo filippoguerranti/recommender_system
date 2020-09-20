@@ -4,7 +4,7 @@ import numpy as np
 from surprise import Reader
 from surprise import Dataset
 from surprise import accuracy
-from surprise import KNNBasic,  KNNWithMeans, KNNBaseline, SVD
+from surprise import KNNBaseline, SVD
 from surprise.model_selection import KFold
 from tqdm import tqdm
 
